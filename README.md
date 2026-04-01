@@ -4,7 +4,7 @@ A premium, dark-themed full stack developer portfolio built with React.
 Live with real GitHub data, working contact form, and modern UI.
 
 ## 🌐 Live Demo
-[View Portfolio](https://your-netlify-link.netlify.app)
+[View Portfolio](https://Donsparkdev.netlify.app)
 
 ## ✨ Features
 - Dark futuristic UI with neon accents
@@ -31,7 +31,7 @@ Live with real GitHub data, working contact form, and modern UI.
 - Contact Form
 
 ## 🚀 Run Locally
-git clone https://github.com/Donspark23/my-portfolio.git
+git clone https://github.com/Donspark23/Donsparkdev.git
 cd my-portfolio
 npm install
 npm run dev
