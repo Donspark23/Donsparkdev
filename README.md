@@ -1,16 +1,42 @@
-# React + Vite
+# 🚀 Uchenna Chidera Onyesom — Developer Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A premium, dark-themed full stack developer portfolio built with React.
+Live with real GitHub data, working contact form, and modern UI.
 
-Currently, two official plugins are available:
+## 🌐 Live Demo
+[View Portfolio](https://your-netlify-link.netlify.app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
+- Dark futuristic UI with neon accents
+- Glassmorphism cards and smooth animations
+- Live GitHub repos, stats and profile via API
+- Working contact form powered by EmailJS
+- Fully responsive — mobile first
+- Custom SVG code-themed logo
 
-## React Compiler
+## 🛠️ Tech Stack
+- React.js + Vite
+- CSS3 (no external UI library)
+- GitHub REST API
+- EmailJS
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📂 Sections
+- Hero
+- About Me
+- Skills & Tech Stack
+- Projects
+- Services
+- GitHub Activity (live)
+- Testimonials
+- Contact Form
 
-## Expanding the ESLint configuration
+## 🚀 Run Locally
+git clone https://github.com/Donspark23/my-portfolio.git
+cd my-portfolio
+npm install
+npm run dev
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📬 Contact
+- Email: onyuchennachidera@gmail.com
+- GitHub: github.com/Donspark23
+- Location: Abuja, Nigeria
