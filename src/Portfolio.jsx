@@ -383,7 +383,7 @@ function About() {
         <div className="about-visual reveal" style={{display:"flex",justifyContent:"center"}}>
           <div style={{position:"relative",width:280,height:280}}>
             <div style={{width:"100%",height:"100%",borderRadius:24,border:"2px solid rgba(0,200,255,.2)",overflow:"hidden",position:"relative"}}>
-              <img src={`https://avatars.githubusercontent.com/${GITHUB_USERNAME}`} alt="Uchenna Chidera Onyesom" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} onError={e=>{e.target.style.display="none";}}/>
+              <img src={`https://avatars.githubusercontent.com/${GITHUB_USERNAME}`} alt="Uchenna Chidera Onyesom" style={{width:"100%",height:"100%",borderRadius:"50%",objectFit:"cover",display:"block"}} onError={e=>{e.target.style.display="none";}}/>
             </div>
             {[{in:-20,dur:"20s",cw:true,dot:{top:0,left:"50%",transform:"translate(-50%,-50%)"},dc:"#00c8ff"},{in:-40,dur:"30s",cw:false,dot:{bottom:0,right:0,transform:"translate(50%,50%)"},dc:"#7b2fff",bc:"rgba(123,47,255,.1)"}].map((r,i)=>(
               <div key={i} style={{position:"absolute",borderRadius:"50%",border:`1px solid ${r.bc||"rgba(0,200,255,.15)"}`,inset:r.in,animation:`${r.cw?"ringCW":"ringCCW"} ${r.dur} linear infinite`}}>
@@ -398,7 +398,7 @@ function About() {
         </div>
         <div className="reveal reveal-d1">
           <div style={{display:"inline-block",...S.mono,fontSize:".72rem",...S.neon,letterSpacing:3,textTransform:"uppercase",marginBottom:12,padding:"5px 14px",border:"1px solid rgba(0,200,255,.2)",borderRadius:100}}>About Me</div>
-          <h2 style={{...S.display,fontSize:"2rem",fontWeight:800,letterSpacing:"-.5px",marginBottom:4}}>Uchenna Chidera<br/>Onyesom</h2>
+          <h2 style={{...S.display,fontSize:"2rem",fontWeight:800,letterSpacing:"-.5px",marginBottom:4,color:"white"}}>Uchenna Chidera<br/>Onyesom</h2>
           <p style={{...S.neon,...S.mono,fontSize:".85rem",marginBottom:20,letterSpacing:1}}>$ full-stack-developer --location="Abuja, Nigeria"</p>
           <p className="about-loc" style={{...S.dim,fontSize:".85rem",display:"flex",alignItems:"center",gap:6,marginBottom:24}}>📍 Abuja, Nigeria &nbsp;·&nbsp; 🕐 WAT (UTC+1)</p>
           <p style={{...S.mid,lineHeight:1.9,marginBottom:28,fontSize:".97rem"}}>I'm a disciplined, self-driven full stack developer who builds complete, production-ready systems — from crafting modern React interfaces to engineering secure Node.js backends and REST APIs.<br/><br/>Beyond writing code, I share knowledge through YouTube tutorials and one-on-one mentoring, helping the next generation of Nigerian developers break into tech.</p>
