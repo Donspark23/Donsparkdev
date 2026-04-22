@@ -704,14 +704,11 @@ function Contact() {
             <p style={{...S.mid,fontSize:".9rem",lineHeight:1.8,marginBottom:32}}>Whether you need a full stack application, a secure API, or a skilled developer to join your team — I'm available and ready to deliver excellence.</p>
             <div style={{display:"flex",flexDirection:"column",gap:16,marginBottom:32}}>
               {[
-                {icon:"📧",label:"Email",   value:"onyuchennachidera@gmail.com",     href:"mailto:onyuchennachidera@gmail.com"},
-                {icon:"📱",label:"WhatsApp",value:"+234 8113882005",              href:"tel:+2348113882005"},
-                {icon:"💼",label:"LinkedIn",value:"Uchenna Chidera Onyesom",        href:"https://www.linkedin.com/in/uchenna-chidera-onyesom-72b973345"},
-                {icon:"🐙",label:"GitHub",  value:`github.com/${GITHUB_USERNAME}`, href:`https://github.com/${GITHUB_USERNAME}`},
-              ].map(c=>(
-                <a key={c.label} href={c.href} className="contact-item" target={c.href.startsWith("http")?"_blank":undefined} rel="noreferrer">
+{icon:"📧",label:"Email",   value:"onyuchennachidera@gmail.com",     href:"mailto:onyuchennachidera@gmail.com"},            {icon:"📱",label:"WhatsApp",value:"+234 8113882005",href:"tel:+2348113882005"},          {icon:"💼",label:"LinkedIn",value:"Uchenna Chidera Onyesom",        href:"https://www.linkedin.com/in/uchenna-chidera-onyesom-72b973345"},
+{icon:"🐙",label:"GitHub",  value:`github.com/${GITHUB_USERNAME}`, href:`https://github.com/${GITHUB_USERNAME}`},
+].map(c=>(<a key={c.label} href={c.href} className="contact-item" target={c.href.startsWith("http")?"_blank":undefined} rel="noreferrer">
                   <div style={{width:40,height:40,borderRadius:10,background:"rgba(0,200,255,.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem",flexShrink:0}}>{c.icon}</div>
-Z x                 <div>
+  <div>
                     <div style={{fontSize:".72rem",...S.dim,marginBottom:2}}>{c.label}</div>
                     <div style={{fontSize:".88rem",fontWeight:500}}>{c.value}</div>
                   </div>
