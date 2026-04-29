@@ -603,9 +603,7 @@ const BLOG_POSTS = [
       {type:"p", text:"If you've built any kind of API, you've heard of JWT. But most tutorials skip the 'why' and jump straight to the code. In this article, we're going to fix that — you'll understand exactly what a JWT is, how it protects your routes, and how to implement a proper access + refresh token system in Node.js."},
       {type:"h2",text:"What Is a JWT?"},
       {type:"p", text:"JWT stands for JSON Web Token. It's a compact, URL-safe string that encodes a payload of data and signs it with a secret key. The result looks like this:"},
-      {type:"code",text:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
-.eyJ1c2VySWQiOiI2NDNhYmMiLCJpYXQiOjE2ODB9
-.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"},
+      {type:"code",text:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDNhYmMiLCJpYXQiOjE2ODB9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"},
       {type:"p", text:"It has 3 parts separated by dots: the Header (algorithm used), the Payload (your data), and the Signature (proof it hasn't been tampered with). The key insight: the server doesn't store the token. It just verifies the signature every time."},
       {type:"h2",text:"Why Use JWT Over Sessions?"},
       {type:"p", text:"Traditional sessions store user data server-side and give the client a session ID cookie. This works, but it means your server needs to maintain state — a problem when you scale horizontally across multiple servers."},
@@ -614,53 +612,12 @@ const BLOG_POSTS = [
       {type:"p", text:"First, install the library:"},
       {type:"code",text:"npm install jsonwebtoken bcryptjs"},
       {type:"p", text:"Here's a clean login route:"},
-      {type:"code",text:"const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-
-// POST /api/auth/login
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  // 1. Find user
-  const user = await User.findOne({ email });
-  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-
-  // 2. Verify password
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
-
-  // 3. Sign token
-  const token = jwt.sign(
-    { userId: user._id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: '15m' }
-  );
-
-  res.json({ token });
-});"},
+      {type:"code",text:"const jwt = require('jsonwebtoken');\nconst bcrypt = require('bcryptjs');\n\n// POST /api/auth/login\nrouter.post('/login', async (req, res) => {\n  const { email, password } = req.body;\n\n  // 1. Find user\n  const user = await User.findOne({ email });\n  if (!user) return res.status(401).json({ error: 'Invalid credentials' });\n\n  // 2. Verify password\n  const valid = await bcrypt.compare(password, user.password);\n  if (!valid) return res.status(401).json({ error: 'Invalid credentials' });\n\n  // 3. Sign token\n  const token = jwt.sign(\n    { userId: user._id, email: user.email },\n    process.env.JWT_SECRET,\n    { expiresIn: '15m' }\n  );\n\n  res.json({ token });\n});"},
       {type:"h2",text:"The Access + Refresh Token Pattern"},
       {type:"p", text:"Short-lived access tokens (15 min) + long-lived refresh tokens (7 days) is the gold standard. When the access token expires, the client uses the refresh token to get a new one — silently, without logging the user out."},
       {type:"blockquote",text:"Never store sensitive data in the JWT payload. It's encoded, not encrypted. Anyone can decode it. Keep it to userId and role only."},
       {type:"h2",text:"Protecting Routes with Middleware"},
-      {type:"code",text:"function authMiddleware(req, res, next) {
-  const auth = req.headers.authorization;
-  if (!auth?.startsWith('Bearer '))
-    return res.status(401).json({ error: 'No token' });
-
-  try {
-    const token = auth.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch {
-    res.status(401).json({ error: 'Invalid token' });
-  }
-}
-
-// Usage
-router.get('/profile', authMiddleware, (req, res) => {
-  res.json({ userId: req.user.userId });
-});"},
+      {type:"code",text:"function authMiddleware(req, res, next) {\n  const auth = req.headers.authorization;\n  if (!auth?.startsWith('Bearer '))\n    return res.status(401).json({ error: 'No token' });\n\n  try {\n    const token = auth.split(' ')[1];\n    const decoded = jwt.verify(token, process.env.JWT_SECRET);\n    req.user = decoded;\n    next();\n  } catch {\n    res.status(401).json({ error: 'Invalid token' });\n  }\n}\n\n// Usage\nrouter.get('/profile', authMiddleware, (req, res) => {\n  res.json({ userId: req.user.userId });\n});"},
       {type:"p", text:"And that's it — a clean, secure JWT authentication system. Store your JWT_SECRET in .env, never hardcode it, and always use HTTPS in production."},
     ]
   },
@@ -675,58 +632,12 @@ router.get('/profile', authMiddleware, (req, res) => {
       {type:"p", text:"Multer is the standard Node.js middleware for handling multipart/form-data. Install it alongside the Cloudinary SDK:"},
       {type:"code",text:"npm install multer cloudinary multer-storage-cloudinary"},
       {type:"h2",text:"Configuring Cloudinary Storage"},
-      {type:"code",text:"const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key:    process.env.CLOUD_KEY,
-  api_secret: process.env.CLOUD_SECRET,
-});
-
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: 'avatars',
-    allowed_formats: ['jpg','jpeg','png','webp'],
-    transformation: [{ width:400, height:400, crop:'fill' }],
-  },
-});
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
-  fileFilter: (req, file, cb) => {
-    const allowed = ['image/jpeg','image/png','image/webp'];
-    if (allowed.includes(file.mimetype)) cb(null, true);
-    else cb(new Error('Only images allowed'), false);
-  },
-});"},
+      {type:"code",text:"const cloudinary = require('cloudinary').v2;\nconst { CloudinaryStorage } = require('multer-storage-cloudinary');\n\ncloudinary.config({\n  cloud_name: process.env.CLOUD_NAME,\n  api_key:    process.env.CLOUD_KEY,\n  api_secret: process.env.CLOUD_SECRET,\n});\n\nconst storage = new CloudinaryStorage({\n  cloudinary,\n  params: {\n    folder: 'avatars',\n    allowed_formats: ['jpg','jpeg','png','webp'],\n    transformation: [{ width:400, height:400, crop:'fill' }],\n  },\n});\n\nconst upload = multer({\n  storage,\n  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB\n  fileFilter: (req, file, cb) => {\n    const allowed = ['image/jpeg','image/png','image/webp'];\n    if (allowed.includes(file.mimetype)) cb(null, true);\n    else cb(new Error('Only images allowed'), false);\n  },\n});"},
       {type:"h2",text:"The Upload Route"},
-      {type:"code",text:"router.post('/upload/avatar', authMiddleware, upload.single('avatar'), async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-
-    // Save URL to user profile
-    await User.findByIdAndUpdate(req.user.userId, {
-      avatar: req.file.path,
-      avatarPublicId: req.file.filename,
-    });
-
-    res.json({
-      success: true,
-      url: req.file.path,
-      message: 'Avatar updated successfully',
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});"},
+      {type:"code",text:"router.post('/upload/avatar', authMiddleware, upload.single('avatar'), async (req, res) => {\n  try {\n    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });\n\n    // Save URL to user profile\n    await User.findByIdAndUpdate(req.user.userId, {\n      avatar: req.file.path,\n      avatarPublicId: req.file.filename,\n    });\n\n    res.json({\n      success: true,\n      url: req.file.path,\n      message: 'Avatar updated successfully',\n    });\n  } catch (err) {\n    res.status(500).json({ error: err.message });\n  }\n});"},
       {type:"h2",text:"Deleting Old Images"},
       {type:"p", text:"Always delete the old Cloudinary image before uploading a new one — otherwise you'll accumulate storage costs:"},
-      {type:"code",text:"if (user.avatarPublicId) {
-  await cloudinary.uploader.destroy(user.avatarPublicId);
-}"},
+      {type:"code",text:"if (user.avatarPublicId) {\n  await cloudinary.uploader.destroy(user.avatarPublicId);\n}"},
       {type:"blockquote",text:"Tip: Always validate on both frontend AND backend. Never trust client-side validation alone."},
       {type:"p", text:"With this setup you get automatic image resizing, format conversion, CDN delivery, and all file management handled by Cloudinary — your server just orchestrates the process."},
     ]
@@ -740,59 +651,16 @@ const upload = multer({
       {type:"p", text:"React gives you the freedom to structure your code however you want. That freedom is also a trap. After working on multiple projects, I've settled on 5 patterns that consistently produce cleaner, more maintainable code."},
       {type:"h2",text:"1. Custom Hooks for Logic Separation"},
       {type:"p", text:"The single best thing you can do for your components is move logic into custom hooks. Your component should only care about rendering."},
-      {type:"code",text:"// Before — logic mixed with UI
-function UserProfile() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    fetch('/api/user').then(r => r.json()).then(setUser).finally(() => setLoading(false));
-  }, []);
-  // ... 50 more lines of render
-}
-
-// After — clean separation
-function useUser() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    fetch('/api/user').then(r => r.json()).then(setUser).finally(() => setLoading(false));
-  }, []);
-  return { user, loading };
-}
-
-function UserProfile() {
-  const { user, loading } = useUser();
-  if (loading) return <Spinner />;
-  return <div>{user.name}</div>;
-}"},
+      {type:"code",text:"// Before — logic mixed with UI\nfunction UserProfile() {\n  const [user, setUser] = useState(null);\n  const [loading, setLoading] = useState(true);\n  useEffect(() => {\n    fetch('/api/user').then(r => r.json()).then(setUser).finally(() => setLoading(false));\n  }, []);\n  // ... 50 more lines of render\n}\n\n// After — clean separation\nfunction useUser() {\n  const [user, setUser] = useState(null);\n  const [loading, setLoading] = useState(true);\n  useEffect(() => {\n    fetch('/api/user').then(r => r.json()).then(setUser).finally(() => setLoading(false));\n  }, []);\n  return { user, loading };\n}\n\nfunction UserProfile() {\n  const { user, loading } = useUser();\n  if (loading) return <Spinner />;\n  return <div>{user.name}</div>;\n}"},
       {type:"h2",text:"2. Compound Components"},
       {type:"p", text:"Compound components let you build flexible, expressive APIs for complex UI components — like a custom Select or Modal that feels native."},
       {type:"h2",text:"3. Render Props for Shared Behavior"},
       {type:"p", text:"When you need to share stateful behavior between components without forcing a specific UI, render props (or the modern hook equivalent) are your friend."},
       {type:"h2",text:"4. Component Composition Over Props Drilling"},
       {type:"p", text:"Before you reach for Context or Redux, try composition. Pass components as children or props instead of drilling data five levels deep."},
-      {type:"code",text:"// Instead of prop drilling
-<Layout user={user} theme={theme} onLogout={handleLogout}>
-  <Dashboard user={user} />
-</Layout>
-
-// Use composition
-<Layout>
-  <Layout.Header>
-    <UserMenu user={user} onLogout={handleLogout} />
-  </Layout.Header>
-  <Dashboard user={user} />
-</Layout>"},
+      {type:"code",text:"// Instead of prop drilling\n<Layout user={user} theme={theme} onLogout={handleLogout}>\n  <Dashboard user={user} />\n</Layout>\n\n// Use composition\n<Layout>\n  <Layout.Header>\n    <UserMenu user={user} onLogout={handleLogout} />\n  </Layout.Header>\n  <Dashboard user={user} />\n</Layout>"},
       {type:"h2",text:"5. Lazy Loading with Suspense"},
-      {type:"code",text:"const BlogPost = React.lazy(() => import('./BlogPost'));
-
-function App() {
-  return (
-    <Suspense fallback={<Spinner />}>
-      <BlogPost />
-    </Suspense>
-  );
-}"},
+      {type:"code",text:"const BlogPost = React.lazy(() => import('./BlogPost'));\n\nfunction App() {\n  return (\n    <Suspense fallback={<Spinner />}>\n      <BlogPost />\n    </Suspense>\n  );\n}"},
       {type:"p", text:"These 5 patterns alone will make your React code dramatically easier to read, test, and scale. Pick one and apply it to your next component."},
     ]
   },
@@ -806,49 +674,12 @@ function App() {
       {type:"h2",text:"Embedding vs Referencing"},
       {type:"p", text:"The core decision in MongoDB schema design is: should I embed this data inside the document, or store it in a separate collection and reference it?"},
       {type:"p", text:"Embed when: the data is always accessed together, the embedded data is small, and it won't grow unboundedly. Reference when: the data is large, shared across many documents, or updated frequently on its own."},
-      {type:"code",text:"// Embedding — good for small, stable data
-const userSchema = new Schema({
-  name: String,
-  email: String,
-  address: {          // embedded
-    street: String,
-    city: String,
-    country: String,
-  },
-});
-
-// Referencing — good for large or shared data
-const postSchema = new Schema({
-  title: String,
-  content: String,
-  author: { type: Schema.Types.ObjectId, ref: 'User' }, // referenced
-  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
-});"},
+      {type:"code",text:"// Embedding — good for small, stable data\nconst userSchema = new Schema({\n  name: String,\n  email: String,\n  address: {          // embedded\n    street: String,\n    city: String,\n    country: String,\n  },\n});\n\n// Referencing — good for large or shared data\nconst postSchema = new Schema({\n  title: String,\n  content: String,\n  author: { type: Schema.Types.ObjectId, ref: 'User' }, // referenced\n  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],\n});"},
       {type:"h2",text:"Indexing for Performance"},
       {type:"p", text:"Without indexes, MongoDB scans every document in a collection for every query. That's fine at 100 documents. At 100,000 it's a disaster."},
-      {type:"code",text:"// Always index fields you query frequently
-userSchema.index({ email: 1 }, { unique: true });
-postSchema.index({ author: 1, createdAt: -1 }); // compound index
-postSchema.index({ title: 'text', content: 'text' }); // full-text search"},
+      {type:"code",text:"// Always index fields you query frequently\nuserSchema.index({ email: 1 }, { unique: true });\npostSchema.index({ author: 1, createdAt: -1 }); // compound index\npostSchema.index({ title: 'text', content: 'text' }); // full-text search"},
       {type:"h2",text:"Real-World Example: Blog Platform"},
-      {type:"code",text:"const postSchema = new Schema({
-  title:     { type: String, required: true, maxlength: 100 },
-  slug:      { type: String, unique: true },
-  content:   { type: String, required: true },
-  author:    { type: ObjectId, ref: 'User', required: true },
-  tags:      [String],
-  views:     { type: Number, default: 0 },
-  published: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
-}, { timestamps: true });
-
-// Auto-generate slug before saving
-postSchema.pre('save', function(next) {
-  if (this.isModified('title')) {
-    this.slug = this.title.toLowerCase().replace(/\s+/g, '-');
-  }
-  next();
-});"},
+      {type:"code",text:"const postSchema = new Schema({\n  title:     { type: String, required: true, maxlength: 100 },\n  slug:      { type: String, unique: true },\n  content:   { type: String, required: true },\n  author:    { type: ObjectId, ref: 'User', required: true },\n  tags:      [String],\n  views:     { type: Number, default: 0 },\n  published: { type: Boolean, default: false },\n  createdAt: { type: Date, default: Date.now },\n}, { timestamps: true });\n\n// Auto-generate slug before saving\npostSchema.pre('save', function(next) {\n  if (this.isModified('title')) {\n    this.slug = this.title.toLowerCase().replace(/\s+/g, '-');\n  }\n  next();\n});"},
       {type:"blockquote",text:"Design your schema around your queries, not your data. Ask: how will this data be read? That determines how it should be stored."},
       {type:"p", text:"Good schema design is the difference between a MongoDB app that flies and one that crawls. Get the fundamentals right early and scaling becomes a non-issue."},
     ]
@@ -861,72 +692,16 @@ postSchema.pre('save', function(next) {
     content:[
       {type:"p", text:"Anyone can get an Express server running in 10 minutes. Shipping a production-grade API is a different story. Here are the practices that separate hobby projects from professional backends."},
       {type:"h2",text:"Project Structure That Scales"},
-      {type:"code",text:"src/
-├── controllers/     # request handlers
-├── middleware/      # auth, validation, errors
-├── models/          # Mongoose schemas
-├── routes/          # Express routers
-├── services/        # business logic
-├── utils/           # helpers
-├── config/          # env, db connection
-└── app.js           # Express setup"},
+      {type:"code",text:"src/\n├── controllers/     # request handlers\n├── middleware/      # auth, validation, errors\n├── models/          # Mongoose schemas\n├── routes/          # Express routers\n├── services/        # business logic\n├── utils/           # helpers\n├── config/          # env, db connection\n└── app.js           # Express setup"},
       {type:"h2",text:"Centralised Error Handling"},
       {type:"p", text:"Never handle errors in individual route handlers. Create one error middleware that catches everything:"},
-      {type:"code",text:"// middleware/errorHandler.js
-function errorHandler(err, req, res, next) {
-  const status = err.statusCode || 500;
-  const message = err.message || 'Internal server error';
-
-  console.error(`[${new Date().toISOString()}] ${status}: ${message}`);
-
-  res.status(status).json({
-    success: false,
-    error: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-  });
-}
-
-// In app.js — must be last
-app.use(errorHandler);"},
+      {type:"code",text:"// middleware/errorHandler.js\nfunction errorHandler(err, req, res, next) {\n  const status = err.statusCode || 500;\n  const message = err.message || 'Internal server error';\n\n  console.error(`[${new Date().toISOString()}] ${status}: ${message}`);\n\n  res.status(status).json({\n    success: false,\n    error: message,\n    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),\n  });\n}\n\n// In app.js — must be last\napp.use(errorHandler);"},
       {type:"h2",text:"Input Validation with express-validator"},
-      {type:"code",text:"const { body, validationResult } = require('express-validator');
-
-const registerRules = [
-  body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 8 }).matches(/[A-Z]/).matches(/[0-9]/),
-  body('name').trim().isLength({ min: 2, max: 50 }),
-];
-
-router.post('/register', registerRules, (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-  // proceed with valid data
-});"},
+      {type:"code",text:"const { body, validationResult } = require('express-validator');\n\nconst registerRules = [\n  body('email').isEmail().normalizeEmail(),\n  body('password').isLength({ min: 8 }).matches(/[A-Z]/).matches(/[0-9]/),\n  body('name').trim().isLength({ min: 2, max: 50 }),\n];\n\nrouter.post('/register', registerRules, (req, res) => {\n  const errors = validationResult(req);\n  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });\n  // proceed with valid data\n});"},
       {type:"h2",text:"Rate Limiting"},
-      {type:"code",text:"const rateLimit = require('express-rate-limit');
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  message: { error: 'Too many requests, slow down.' },
-});
-
-const authLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // only 5 login attempts
-});
-
-app.use('/api', limiter);
-app.use('/api/auth/login', authLimiter);"},
+      {type:"code",text:"const rateLimit = require('express-rate-limit');\n\nconst limiter = rateLimit({\n  windowMs: 15 * 60 * 1000, // 15 minutes\n  max: 100,\n  message: { error: 'Too many requests, slow down.' },\n});\n\nconst authLimiter = rateLimit({\n  windowMs: 60 * 60 * 1000, // 1 hour\n  max: 5, // only 5 login attempts\n});\n\napp.use('/api', limiter);\napp.use('/api/auth/login', authLimiter);"},
       {type:"h2",text:"CORS Configuration"},
-      {type:"code",text:"const cors = require('cors');
-
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  methods: ['GET','POST','PUT','PATCH','DELETE'],
-  allowedHeaders: ['Content-Type','Authorization'],
-  credentials: true,
-}));"},
+      {type:"code",text:"const cors = require('cors');\n\napp.use(cors({\n  origin: process.env.CLIENT_URL || 'http://localhost:3000',\n  methods: ['GET','POST','PUT','PATCH','DELETE'],\n  allowedHeaders: ['Content-Type','Authorization'],\n  credentials: true,\n}));"},
       {type:"blockquote",text:"Security is not optional. Rate limiting, input validation, and proper error handling should be in every API you ship — no exceptions."},
     ]
   },
