@@ -30,7 +30,31 @@ const GLOBAL_CSS = `
   @keyframes fadeIn     { from{opacity:0} to{opacity:1} }
   @keyframes logoGlow   { 0%,100%{filter:drop-shadow(0 0 5px rgba(0,200,255,.5))} 50%{filter:drop-shadow(0 0 14px rgba(0,200,255,.9))} }
   @keyframes shimmer    { 0%{background-position:200% center} 100%{background-position:-200% center} }
-  @keyframes cursorBlink{ 0%,100%{opacity:.8} 50%{opacity:0} }
+  @keyframes cursorBlink  { 0%,100%{opacity:.8} 50%{opacity:0} }
+  @keyframes loaderSpin   { to{transform:rotate(360deg)} }
+  @keyframes loaderFadeOut{ 0%{opacity:1} 100%{opacity:0} }
+  @keyframes loaderIn     { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+  .loader-screen { position:fixed; inset:0; background:#050811; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; transition:opacity .7s ease,visibility .7s ease; }
+  .loader-screen.hide { opacity:0; visibility:hidden; pointer-events:none; }
+  .loader-ring { width:54px; height:54px; border-radius:50%; border:2px solid rgba(0,200,255,.1); border-top-color:#00c8ff; animation:loaderSpin .9s linear infinite; }
+  .loader-logo { font-family:'DM Mono',monospace; font-size:1.1rem; background:linear-gradient(135deg,#00c8ff,#7b2fff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 10px rgba(0,200,255,.4)); animation:loaderIn .5s ease both; }
+  .loader-sub  { font-family:'DM Mono',monospace; font-size:.65rem; color:#2a3550; letter-spacing:3px; text-transform:uppercase; animation:loaderIn .5s .25s ease both; }
+
+  @media(pointer:fine){ body{cursor:none;} a,button,.glass-card,.project-card,.repo-card-live{cursor:none;} }
+  .cursor-dot  { position:fixed; width:8px; height:8px; background:#00c8ff; border-radius:50%; pointer-events:none; z-index:99998; transform:translate(-50%,-50%); box-shadow:0 0 10px #00c8ff; transition:background .2s,transform .1s,box-shadow .2s; }
+  .cursor-ring { position:fixed; width:36px; height:36px; border:1.5px solid rgba(0,200,255,.5); border-radius:50%; pointer-events:none; z-index:99997; transform:translate(-50%,-50%); transition:width .15s,height .15s,border-color .2s; }
+  .cursor-dot.hovering  { transform:translate(-50%,-50%) scale(2.2); background:#7b2fff; box-shadow:0 0 16px #7b2fff; }
+  .cursor-ring.hovering { width:54px; height:54px; border-color:rgba(123,47,255,.5); }
+
+  .blog-card { border-radius:16px; background:rgba(8,13,26,.8); border:1px solid rgba(0,200,255,.1); overflow:hidden; transition:all .3s; text-decoration:none; color:#e8eaf6; display:flex; flex-direction:column; }
+  .blog-card:hover { transform:translateY(-6px); border-color:rgba(0,200,255,.3); box-shadow:0 20px 60px rgba(0,0,0,.4); }
+
+  .pricing-card { border-radius:20px; padding:36px 32px; display:flex; flex-direction:column; gap:20px; position:relative; overflow:hidden; transition:all .3s; }
+  .pricing-card.featured { background:linear-gradient(135deg,rgba(0,200,255,.08),rgba(123,47,255,.08)); border:1px solid rgba(0,200,255,.3)!important; transform:scale(1.03); }
+  .pricing-card.featured:hover { transform:scale(1.03) translateY(-4px)!important; }
+  .pricing-feat { display:flex; align-items:flex-start; gap:10px; font-size:.87rem; color:#a0aec0; line-height:1.5; }
+  .pricing-feat::before { content:'✓'; color:#00c8ff; font-weight:700; flex-shrink:0; margin-top:1px; }
 
   .hero-content { animation:heroIn .9s cubic-bezier(.16,1,.3,1) both; }
   .badge-anim-1{animation:badgeIn .5s cubic-bezier(.16,1,.3,1) .3s both}
@@ -89,6 +113,27 @@ const GLOBAL_CSS = `
   .footer-back:hover { color:#00c8ff; }
 
   .gh-skeleton { background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:6px; }
+
+  /* Blog article reader */
+  .article-overlay { position:fixed; inset:0; background:#050811; z-index:10000; overflow-y:auto; animation:fadeIn .35s ease; }
+  .article-body h2 { font-family:'Syne',sans-serif; font-size:1.35rem; font-weight:800; color:#e8eaf6; margin:40px 0 14px; letter-spacing:-.5px; }
+  .article-body h3 { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:700; color:#c8d0e0; margin:28px 0 10px; }
+  .article-body p  { color:#8892a4; line-height:1.95; margin-bottom:18px; font-size:.97rem; }
+  .article-body ul,.article-body ol { padding-left:22px; margin-bottom:18px; }
+  .article-body li { color:#8892a4; line-height:1.85; font-size:.95rem; margin-bottom:6px; }
+  .article-body li::marker { color:#00c8ff; }
+  .article-body strong { color:#c8d0e0; font-weight:600; }
+  .article-body code { font-family:'DM Mono',monospace; font-size:.82rem; background:rgba(0,200,255,.07); border:1px solid rgba(0,200,255,.15); color:#00c8ff; padding:2px 8px; border-radius:5px; }
+  .article-body pre { background:rgba(5,8,17,.9); border:1px solid rgba(0,200,255,.12); border-radius:12px; padding:24px; margin:24px 0; overflow-x:auto; }
+  .article-body pre code { background:none; border:none; padding:0; font-size:.82rem; color:#a0aec0; line-height:1.8; }
+  .article-body pre code .kw { color:#7b2fff; }
+  .article-body pre code .fn { color:#00c8ff; }
+  .article-body pre code .st { color:#00c88a; }
+  .article-body pre code .cm { color:#3a4a6a; }
+  .article-body pre code .nu { color:#ffd700; }
+  .article-body blockquote { border-left:3px solid #00c8ff; padding:14px 20px; background:rgba(0,200,255,.04); border-radius:0 10px 10px 0; margin:24px 0; font-style:italic; color:#6b7a99; }
+  .progress-bar { position:fixed; top:0; left:0; height:2px; background:linear-gradient(90deg,#00c8ff,#7b2fff); z-index:10001; transition:width .1s; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 
   @media(max-width:900px){
     .about-grid{grid-template-columns:1fr!important;text-align:center}
@@ -173,6 +218,44 @@ const S = {
   dim:     { color:"#6b7a99" },
   mid:     { color:"#a0aec0" },
 };
+
+
+/* ══════════════════════════════════════════
+   LOADER
+══════════════════════════════════════════ */
+function Loader({ done }) {
+  return (
+    <div className={`loader-screen${done?" hide":""}`}>
+      <div className="loader-ring"/>
+      <span className="loader-logo">&lt; UCO /&gt;</span>
+      <span className="loader-sub">Loading portfolio...</span>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   CUSTOM CURSOR
+══════════════════════════════════════════ */
+function CustomCursor() {
+  const dot  = useRef(null);
+  const ring = useRef(null);
+  useEffect(()=>{
+    const move = e=>{
+      const x=e.clientX, y=e.clientY;
+      if(dot.current)  Object.assign(dot.current.style,  {left:x+"px",top:y+"px"});
+      if(ring.current) Object.assign(ring.current.style, {left:x+"px",top:y+"px"});
+    };
+    const over = e=>{
+      const t=e.target.closest("a,button,.glass-card,.project-card,.repo-card-live,.blog-card,.pricing-card");
+      dot.current?.classList.toggle("hovering",!!t);
+      ring.current?.classList.toggle("hovering",!!t);
+    };
+    window.addEventListener("mousemove",move);
+    window.addEventListener("mouseover",over);
+    return()=>{ window.removeEventListener("mousemove",move); window.removeEventListener("mouseover",over); };
+  },[]);
+  return (<><div ref={dot} className="cursor-dot"/><div ref={ring} className="cursor-ring"/></>);
+}
 
 /* ══════════════════════════════════════════
    CUSTOM CODE-THEMED LOGO
@@ -304,7 +387,7 @@ function Navbar({ scrolled, mobileOpen, setMobileOpen }) {
     <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:1000,padding:"0 5%",height:70,display:"flex",alignItems:"center",justifyContent:"space-between",background:scrolled?"rgba(5,8,17,.97)":"rgba(5,8,17,.7)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(0,200,255,.1)",transition:"background .3s"}}>
       <Logo/>
       <ul className="nav-desktop" style={{display:"flex",gap:"2rem",listStyle:"none"}}>
-        {["about","skills","projects","services","github","contact"].map(id=>(
+        {["about","skills","projects","services","pricing","blog","github","contact"].map(id=>(
           <li key={id}><a href={`#${id}`} className={`nav-link-item${id==="contact"?" nav-cta-link":""}`}>{id[0].toUpperCase()+id.slice(1)}</a></li>
         ))}
       </ul>
@@ -313,7 +396,7 @@ function Navbar({ scrolled, mobileOpen, setMobileOpen }) {
       </div>
       {mobileOpen&&(
         <div style={{position:"fixed",top:70,left:0,right:0,background:"rgba(5,8,17,.98)",padding:"24px 5%",display:"flex",flexDirection:"column",gap:20,borderBottom:"1px solid rgba(0,200,255,.1)",zIndex:999,backdropFilter:"blur(20px)"}}>
-          {["about","skills","projects","services","github","contact"].map(id=>(
+          {["about","skills","projects","services","pricing","blog","github","contact"].map(id=>(
             <a key={id} href={`#${id}`} className="nav-link-item" onClick={()=>setMobileOpen(false)}>{id[0].toUpperCase()+id.slice(1)}</a>
           ))}
         </div>
@@ -383,7 +466,7 @@ function About() {
         <div className="about-visual reveal" style={{display:"flex",justifyContent:"center"}}>
           <div style={{position:"relative",width:280,height:280}}>
             <div style={{width:"100%",height:"100%",borderRadius:24,border:"2px solid rgba(0,200,255,.2)",overflow:"hidden",position:"relative"}}>
-              <img src={`https://avatars.githubusercontent.com/${GITHUB_USERNAME}`} alt="Uchenna Chidera Onyesom" style={{width:"100%",height:"100%",borderRadius:"50%",objectFit:"cover",display:"block"}} onError={e=>{e.target.style.display="none";}}/>
+              <img src={`https://avatars.githubusercontent.com/${GITHUB_USERNAME}`} alt="Uchenna Chidera Onyesom" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} onError={e=>{e.target.style.display="none";}}/>
             </div>
             {[{in:-20,dur:"20s",cw:true,dot:{top:0,left:"50%",transform:"translate(-50%,-50%)"},dc:"#00c8ff"},{in:-40,dur:"30s",cw:false,dot:{bottom:0,right:0,transform:"translate(50%,50%)"},dc:"#7b2fff",bc:"rgba(123,47,255,.1)"}].map((r,i)=>(
               <div key={i} style={{position:"absolute",borderRadius:"50%",border:`1px solid ${r.bc||"rgba(0,200,255,.15)"}`,inset:r.in,animation:`${r.cw?"ringCW":"ringCCW"} ${r.dur} linear infinite`}}>
@@ -398,7 +481,7 @@ function About() {
         </div>
         <div className="reveal reveal-d1">
           <div style={{display:"inline-block",...S.mono,fontSize:".72rem",...S.neon,letterSpacing:3,textTransform:"uppercase",marginBottom:12,padding:"5px 14px",border:"1px solid rgba(0,200,255,.2)",borderRadius:100}}>About Me</div>
-          <h2 style={{...S.display,fontSize:"2rem",fontWeight:800,letterSpacing:"-.5px",marginBottom:4,color:"white"}}>Uchenna Chidera<br/>Onyesom</h2>
+          <h2 style={{...S.display,fontSize:"2rem",fontWeight:800,letterSpacing:"-.5px",marginBottom:4}}>Uchenna Chidera<br/>Onyesom</h2>
           <p style={{...S.neon,...S.mono,fontSize:".85rem",marginBottom:20,letterSpacing:1}}>$ full-stack-developer --location="Abuja, Nigeria"</p>
           <p className="about-loc" style={{...S.dim,fontSize:".85rem",display:"flex",alignItems:"center",gap:6,marginBottom:24}}>📍 Abuja, Nigeria &nbsp;·&nbsp; 🕐 WAT (UTC+1)</p>
           <p style={{...S.mid,lineHeight:1.9,marginBottom:28,fontSize:".97rem"}}>I'm a disciplined, self-driven full stack developer who builds complete, production-ready systems — from crafting modern React interfaces to engineering secure Node.js backends and REST APIs.<br/><br/>Beyond writing code, I share knowledge through YouTube tutorials and one-on-one mentoring, helping the next generation of Nigerian developers break into tech.</p>
@@ -501,6 +584,555 @@ function Services() {
             <p style={{fontSize:".82rem",...S.dim,lineHeight:1.7}}>{s.desc}</p>
           </div>
         ))}
+      </div>
+    </section>
+  );
+}
+
+
+/* ══════════════════════════════════════════
+   BLOG DATA — full articles
+══════════════════════════════════════════ */
+const BLOG_POSTS = [
+  {
+    id:1, tag:"Authentication", color:"rgba(0,200,255,.1)", border:"rgba(0,200,255,.2)",
+    date:"Apr 2025", readTime:"5 min read",
+    title:"How JWT Authentication Really Works",
+    desc:"A deep dive into JSON Web Tokens — how to sign, verify, and secure your Node.js APIs with access and refresh token patterns.",
+    content:[
+      {type:"p", text:"If you've built any kind of API, you've heard of JWT. But most tutorials skip the 'why' and jump straight to the code. In this article, we're going to fix that — you'll understand exactly what a JWT is, how it protects your routes, and how to implement a proper access + refresh token system in Node.js."},
+      {type:"h2",text:"What Is a JWT?"},
+      {type:"p", text:"JWT stands for JSON Web Token. It's a compact, URL-safe string that encodes a payload of data and signs it with a secret key. The result looks like this:"},
+      {type:"code",text:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+.eyJ1c2VySWQiOiI2NDNhYmMiLCJpYXQiOjE2ODB9
+.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"},
+      {type:"p", text:"It has 3 parts separated by dots: the Header (algorithm used), the Payload (your data), and the Signature (proof it hasn't been tampered with). The key insight: the server doesn't store the token. It just verifies the signature every time."},
+      {type:"h2",text:"Why Use JWT Over Sessions?"},
+      {type:"p", text:"Traditional sessions store user data server-side and give the client a session ID cookie. This works, but it means your server needs to maintain state — a problem when you scale horizontally across multiple servers."},
+      {type:"p", text:"JWTs are stateless. The token itself contains the user info. Any server that knows the secret key can verify it. This makes JWTs perfect for REST APIs and microservices."},
+      {type:"h2",text:"Implementing JWT in Node.js"},
+      {type:"p", text:"First, install the library:"},
+      {type:"code",text:"npm install jsonwebtoken bcryptjs"},
+      {type:"p", text:"Here's a clean login route:"},
+      {type:"code",text:"const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+
+// POST /api/auth/login
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  // 1. Find user
+  const user = await User.findOne({ email });
+  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+  // 2. Verify password
+  const valid = await bcrypt.compare(password, user.password);
+  if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
+
+  // 3. Sign token
+  const token = jwt.sign(
+    { userId: user._id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' }
+  );
+
+  res.json({ token });
+});"},
+      {type:"h2",text:"The Access + Refresh Token Pattern"},
+      {type:"p", text:"Short-lived access tokens (15 min) + long-lived refresh tokens (7 days) is the gold standard. When the access token expires, the client uses the refresh token to get a new one — silently, without logging the user out."},
+      {type:"blockquote",text:"Never store sensitive data in the JWT payload. It's encoded, not encrypted. Anyone can decode it. Keep it to userId and role only."},
+      {type:"h2",text:"Protecting Routes with Middleware"},
+      {type:"code",text:"function authMiddleware(req, res, next) {
+  const auth = req.headers.authorization;
+  if (!auth?.startsWith('Bearer '))
+    return res.status(401).json({ error: 'No token' });
+
+  try {
+    const token = auth.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+}
+
+// Usage
+router.get('/profile', authMiddleware, (req, res) => {
+  res.json({ userId: req.user.userId });
+});"},
+      {type:"p", text:"And that's it — a clean, secure JWT authentication system. Store your JWT_SECRET in .env, never hardcode it, and always use HTTPS in production."},
+    ]
+  },
+  {
+    id:2, tag:"File Uploads", color:"rgba(123,47,255,.1)", border:"rgba(123,47,255,.2)",
+    date:"Mar 2025", readTime:"7 min read",
+    title:"Building a File Upload API with Multer & Cloudinary",
+    desc:"Step-by-step guide to accepting, validating and storing file uploads in a Node.js/Express backend with Cloudinary integration.",
+    content:[
+      {type:"p", text:"File uploads are one of those features that sound simple but hide a dozen edge cases. Wrong file type? File too large? What happens if Cloudinary is down? In this guide we'll build a bulletproof upload API from scratch."},
+      {type:"h2",text:"Setting Up Multer"},
+      {type:"p", text:"Multer is the standard Node.js middleware for handling multipart/form-data. Install it alongside the Cloudinary SDK:"},
+      {type:"code",text:"npm install multer cloudinary multer-storage-cloudinary"},
+      {type:"h2",text:"Configuring Cloudinary Storage"},
+      {type:"code",text:"const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key:    process.env.CLOUD_KEY,
+  api_secret: process.env.CLOUD_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'avatars',
+    allowed_formats: ['jpg','jpeg','png','webp'],
+    transformation: [{ width:400, height:400, crop:'fill' }],
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  fileFilter: (req, file, cb) => {
+    const allowed = ['image/jpeg','image/png','image/webp'];
+    if (allowed.includes(file.mimetype)) cb(null, true);
+    else cb(new Error('Only images allowed'), false);
+  },
+});"},
+      {type:"h2",text:"The Upload Route"},
+      {type:"code",text:"router.post('/upload/avatar', authMiddleware, upload.single('avatar'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+    // Save URL to user profile
+    await User.findByIdAndUpdate(req.user.userId, {
+      avatar: req.file.path,
+      avatarPublicId: req.file.filename,
+    });
+
+    res.json({
+      success: true,
+      url: req.file.path,
+      message: 'Avatar updated successfully',
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});"},
+      {type:"h2",text:"Deleting Old Images"},
+      {type:"p", text:"Always delete the old Cloudinary image before uploading a new one — otherwise you'll accumulate storage costs:"},
+      {type:"code",text:"if (user.avatarPublicId) {
+  await cloudinary.uploader.destroy(user.avatarPublicId);
+}"},
+      {type:"blockquote",text:"Tip: Always validate on both frontend AND backend. Never trust client-side validation alone."},
+      {type:"p", text:"With this setup you get automatic image resizing, format conversion, CDN delivery, and all file management handled by Cloudinary — your server just orchestrates the process."},
+    ]
+  },
+  {
+    id:3, tag:"React", color:"rgba(0,200,80,.1)", border:"rgba(0,200,80,.2)",
+    date:"Mar 2025", readTime:"6 min read",
+    title:"5 React Patterns Every Developer Should Know",
+    desc:"From compound components to custom hooks — practical React patterns that make your components cleaner, reusable, and maintainable.",
+    content:[
+      {type:"p", text:"React gives you the freedom to structure your code however you want. That freedom is also a trap. After working on multiple projects, I've settled on 5 patterns that consistently produce cleaner, more maintainable code."},
+      {type:"h2",text:"1. Custom Hooks for Logic Separation"},
+      {type:"p", text:"The single best thing you can do for your components is move logic into custom hooks. Your component should only care about rendering."},
+      {type:"code",text:"// Before — logic mixed with UI
+function UserProfile() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/user').then(r => r.json()).then(setUser).finally(() => setLoading(false));
+  }, []);
+  // ... 50 more lines of render
+}
+
+// After — clean separation
+function useUser() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/user').then(r => r.json()).then(setUser).finally(() => setLoading(false));
+  }, []);
+  return { user, loading };
+}
+
+function UserProfile() {
+  const { user, loading } = useUser();
+  if (loading) return <Spinner />;
+  return <div>{user.name}</div>;
+}"},
+      {type:"h2",text:"2. Compound Components"},
+      {type:"p", text:"Compound components let you build flexible, expressive APIs for complex UI components — like a custom Select or Modal that feels native."},
+      {type:"h2",text:"3. Render Props for Shared Behavior"},
+      {type:"p", text:"When you need to share stateful behavior between components without forcing a specific UI, render props (or the modern hook equivalent) are your friend."},
+      {type:"h2",text:"4. Component Composition Over Props Drilling"},
+      {type:"p", text:"Before you reach for Context or Redux, try composition. Pass components as children or props instead of drilling data five levels deep."},
+      {type:"code",text:"// Instead of prop drilling
+<Layout user={user} theme={theme} onLogout={handleLogout}>
+  <Dashboard user={user} />
+</Layout>
+
+// Use composition
+<Layout>
+  <Layout.Header>
+    <UserMenu user={user} onLogout={handleLogout} />
+  </Layout.Header>
+  <Dashboard user={user} />
+</Layout>"},
+      {type:"h2",text:"5. Lazy Loading with Suspense"},
+      {type:"code",text:"const BlogPost = React.lazy(() => import('./BlogPost'));
+
+function App() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <BlogPost />
+    </Suspense>
+  );
+}"},
+      {type:"p", text:"These 5 patterns alone will make your React code dramatically easier to read, test, and scale. Pick one and apply it to your next component."},
+    ]
+  },
+  {
+    id:4, tag:"MongoDB", color:"rgba(255,165,0,.1)", border:"rgba(255,165,0,.2)",
+    date:"Feb 2025", readTime:"8 min read",
+    title:"MongoDB Schema Design for Beginners",
+    desc:"How to design MongoDB schemas that scale — embedding vs referencing, indexing strategies, and real-world examples with Mongoose.",
+    content:[
+      {type:"p", text:"The most common mistake new MongoDB developers make is treating it like a relational database — normalizing everything into separate collections and joining them with populate(). Sometimes that's right. Often it's not. Let's break it down."},
+      {type:"h2",text:"Embedding vs Referencing"},
+      {type:"p", text:"The core decision in MongoDB schema design is: should I embed this data inside the document, or store it in a separate collection and reference it?"},
+      {type:"p", text:"Embed when: the data is always accessed together, the embedded data is small, and it won't grow unboundedly. Reference when: the data is large, shared across many documents, or updated frequently on its own."},
+      {type:"code",text:"// Embedding — good for small, stable data
+const userSchema = new Schema({
+  name: String,
+  email: String,
+  address: {          // embedded
+    street: String,
+    city: String,
+    country: String,
+  },
+});
+
+// Referencing — good for large or shared data
+const postSchema = new Schema({
+  title: String,
+  content: String,
+  author: { type: Schema.Types.ObjectId, ref: 'User' }, // referenced
+  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+});"},
+      {type:"h2",text:"Indexing for Performance"},
+      {type:"p", text:"Without indexes, MongoDB scans every document in a collection for every query. That's fine at 100 documents. At 100,000 it's a disaster."},
+      {type:"code",text:"// Always index fields you query frequently
+userSchema.index({ email: 1 }, { unique: true });
+postSchema.index({ author: 1, createdAt: -1 }); // compound index
+postSchema.index({ title: 'text', content: 'text' }); // full-text search"},
+      {type:"h2",text:"Real-World Example: Blog Platform"},
+      {type:"code",text:"const postSchema = new Schema({
+  title:     { type: String, required: true, maxlength: 100 },
+  slug:      { type: String, unique: true },
+  content:   { type: String, required: true },
+  author:    { type: ObjectId, ref: 'User', required: true },
+  tags:      [String],
+  views:     { type: Number, default: 0 },
+  published: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+}, { timestamps: true });
+
+// Auto-generate slug before saving
+postSchema.pre('save', function(next) {
+  if (this.isModified('title')) {
+    this.slug = this.title.toLowerCase().replace(/\s+/g, '-');
+  }
+  next();
+});"},
+      {type:"blockquote",text:"Design your schema around your queries, not your data. Ask: how will this data be read? That determines how it should be stored."},
+      {type:"p", text:"Good schema design is the difference between a MongoDB app that flies and one that crawls. Get the fundamentals right early and scaling becomes a non-issue."},
+    ]
+  },
+  {
+    id:5, tag:"Node.js", color:"rgba(255,45,120,.1)", border:"rgba(255,45,120,.2)",
+    date:"Jan 2025", readTime:"9 min read",
+    title:"Building REST APIs with Express — Best Practices",
+    desc:"Error handling, validation, rate limiting, CORS, and project structure — everything you need to ship production-grade APIs.",
+    content:[
+      {type:"p", text:"Anyone can get an Express server running in 10 minutes. Shipping a production-grade API is a different story. Here are the practices that separate hobby projects from professional backends."},
+      {type:"h2",text:"Project Structure That Scales"},
+      {type:"code",text:"src/
+├── controllers/     # request handlers
+├── middleware/      # auth, validation, errors
+├── models/          # Mongoose schemas
+├── routes/          # Express routers
+├── services/        # business logic
+├── utils/           # helpers
+├── config/          # env, db connection
+└── app.js           # Express setup"},
+      {type:"h2",text:"Centralised Error Handling"},
+      {type:"p", text:"Never handle errors in individual route handlers. Create one error middleware that catches everything:"},
+      {type:"code",text:"// middleware/errorHandler.js
+function errorHandler(err, req, res, next) {
+  const status = err.statusCode || 500;
+  const message = err.message || 'Internal server error';
+
+  console.error(`[${new Date().toISOString()}] ${status}: ${message}`);
+
+  res.status(status).json({
+    success: false,
+    error: message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+  });
+}
+
+// In app.js — must be last
+app.use(errorHandler);"},
+      {type:"h2",text:"Input Validation with express-validator"},
+      {type:"code",text:"const { body, validationResult } = require('express-validator');
+
+const registerRules = [
+  body('email').isEmail().normalizeEmail(),
+  body('password').isLength({ min: 8 }).matches(/[A-Z]/).matches(/[0-9]/),
+  body('name').trim().isLength({ min: 2, max: 50 }),
+];
+
+router.post('/register', registerRules, (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  // proceed with valid data
+});"},
+      {type:"h2",text:"Rate Limiting"},
+      {type:"code",text:"const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  message: { error: 'Too many requests, slow down.' },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // only 5 login attempts
+});
+
+app.use('/api', limiter);
+app.use('/api/auth/login', authLimiter);"},
+      {type:"h2",text:"CORS Configuration"},
+      {type:"code",text:"const cors = require('cors');
+
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  methods: ['GET','POST','PUT','PATCH','DELETE'],
+  allowedHeaders: ['Content-Type','Authorization'],
+  credentials: true,
+}));"},
+      {type:"blockquote",text:"Security is not optional. Rate limiting, input validation, and proper error handling should be in every API you ship — no exceptions."},
+    ]
+  },
+  {
+    id:6, tag:"Career", color:"rgba(0,200,255,.1)", border:"rgba(0,200,255,.2)",
+    date:"Dec 2024", readTime:"10 min read",
+    title:"From Zero to Full Stack Developer in Nigeria",
+    desc:"My honest journey learning web development in Abuja — the resources, struggles, and breakthroughs that made the difference.",
+    content:[
+      {type:"p", text:"I'm writing this for the developer in Abuja, Lagos, Port Harcourt — anywhere in Nigeria — who is staring at a screen, wondering if this tech thing is actually possible for them. Not as a theoretical question, but as the real, daily doubt that hits at 2am when a bug won't resolve and the NEPA has taken light. It's possible. Here's my honest account."},
+      {type:"h2",text:"Starting With Nothing But a Phone"},
+      {type:"p", text:"I didn't start with a laptop. I started with an Android phone, Termux, and a stubborn refusal to accept that was a limitation. The constraints forced creativity — I had to understand what I was doing because there was no GUI to hide behind. Every installation was manual. Every error was educational."},
+      {type:"blockquote",text:"The tools don't make the developer. The discipline does. I've seen people with MacBooks produce nothing. I built production APIs on a phone."},
+      {type:"h2",text:"The Learning Stack That Worked"},
+      {type:"p", text:"I tried everything. Bootcamps, YouTube courses, documentation deep-dives. Here's what actually stuck:"},
+      {type:"ul",items:["The Odin Project for HTML/CSS/JavaScript fundamentals — free and brutal in the best way","JavaScript.info for truly understanding the language, not just copying code","The official React docs (the new beta ones) for React","Fireship on YouTube for quick, dense, no-fluff technical concepts","Building real projects immediately — not toy apps, actual things with real APIs"]},
+      {type:"h2",text:"The Moment Everything Clicked"},
+      {type:"p", text:"It wasn't one moment — it was when I shipped my first JWT authentication system and a real user logged in with it. Not localhost. A deployed URL. A real person. That's when the abstract became concrete and I understood: I could build things people actually use."},
+      {type:"h2",text:"What Nigerian Developers Need to Hear"},
+      {type:"p", text:"The market is global. Your client doesn't care that you're in Abuja if your code is clean and you communicate well. I've spoken to developers in the US who charge $100/hr for work I can match. The gap is confidence and portfolio, not skill."},
+      {type:"ul",items:["Build publicly. GitHub is your CV before your CV.","Write about what you learn. It compounds your understanding AND your visibility.","Price in USD, even for local clients. Your work has international market value.","The Nigerian developer community is growing fast — find your people online.","Consistency over intensity. 2 hours daily beats 14 hours on weekends."]},
+      {type:"h2",text:"Where I Am Now"},
+      {type:"p", text:"I build full stack applications, teach other developers through YouTube and one-on-one mentoring, and actively pursue international clients. The phone in Termux is still part of my setup. The mindset that started there — resourceful, disciplined, relentless — that's what actually got me here."},
+      {type:"blockquote",text:"You don't need better tools. You need to ship something real today, then tomorrow, then the day after. The compound interest on consistent work is extraordinary."},
+    ]
+  },
+];
+
+/* ══════════════════════════════════════════
+   ARTICLE READER
+══════════════════════════════════════════ */
+function ArticleReader({ post, onClose }) {
+  const [progress, setProgress] = useState(0);
+  const contentRef = useRef(null);
+
+  useEffect(()=>{
+    document.body.style.overflow = "hidden";
+    const el = document.querySelector(".article-overlay");
+    const onScroll = ()=>{
+      if(!el) return;
+      const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+      setProgress(Math.min(pct,100));
+    };
+    el?.addEventListener("scroll", onScroll);
+    return ()=>{ document.body.style.overflow=""; el?.removeEventListener("scroll",onScroll); };
+  },[]);
+
+  function renderBlock(block, i) {
+    if(block.type==="h2")        return <h2 key={i}>{block.text}</h2>;
+    if(block.type==="h3")        return <h3 key={i}>{block.text}</h3>;
+    if(block.type==="p")         return <p key={i}>{block.text}</p>;
+    if(block.type==="blockquote")return <blockquote key={i}>{block.text}</blockquote>;
+    if(block.type==="ul")        return <ul key={i}>{block.items.map((it,j)=><li key={j}>{it}</li>)}</ul>;
+    if(block.type==="ol")        return <ol key={i}>{block.items.map((it,j)=><li key={j}>{it}</li>)}</ol>;
+    if(block.type==="code")      return (
+      <pre key={i}><code>{block.text}</code></pre>
+    );
+    return null;
+  }
+
+  return (
+    <div className="article-overlay">
+      <div className="progress-bar" style={{width:`${progress}%`}}/>
+
+      {/* Nav */}
+      <div style={{position:"sticky",top:0,zIndex:10,background:"rgba(5,8,17,.95)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(0,200,255,.1)",padding:"16px 5%",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <button onClick={onClose} style={{display:"flex",alignItems:"center",gap:8,background:"none",border:"none",color:"#a0aec0",cursor:"pointer",fontFamily:"'DM Mono',monospace",fontSize:".78rem",letterSpacing:1}} className="btn-back-link">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Back to Blog
+        </button>
+        <span style={{fontFamily:"'DM Mono',monospace",fontSize:".68rem",color:"#3a4a6a",letterSpacing:2,textTransform:"uppercase"}}>{post.readTime}</span>
+      </div>
+
+      {/* Content */}
+      <div style={{maxWidth:720,margin:"0 auto",padding:"52px 5% 100px"}}>
+        {/* Tag + meta */}
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+          <span style={{fontFamily:"'DM Mono',monospace",fontSize:".68rem",padding:"5px 14px",borderRadius:100,background:post.color,border:`1px solid ${post.border}`,color:"#00c8ff",letterSpacing:2,textTransform:"uppercase"}}>{post.tag}</span>
+          <span style={{fontFamily:"'DM Mono',monospace",fontSize:".7rem",color:"#3a4a6a"}}>{post.date}</span>
+        </div>
+
+        {/* Title */}
+        <h1 style={{fontFamily:"'Syne',sans-serif",fontSize:"clamp(1.8rem,5vw,2.8rem)",fontWeight:800,letterSpacing:"-1.5px",lineHeight:1.1,marginBottom:24,background:"linear-gradient(135deg,#e8eaf6,#a0aec0)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>{post.title}</h1>
+
+        {/* Author */}
+        <div style={{display:"flex",alignItems:"center",gap:14,paddingBottom:32,marginBottom:40,borderBottom:"1px solid rgba(255,255,255,.05)"}}>
+          <img src={`https://avatars.githubusercontent.com/${GITHUB_USERNAME}`} alt="author" style={{width:44,height:44,borderRadius:"50%",border:"2px solid rgba(0,200,255,.2)",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
+          <div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:".9rem",color:"#c8d0e0"}}>Uchenna Chidera Onyesom</div>
+            <div style={{fontFamily:"'DM Mono',monospace",fontSize:".68rem",color:"#3a4a6a",marginTop:2}}>Full Stack Developer · @Donspark23</div>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="article-body" ref={contentRef}>
+          {post.content.map((block,i)=>renderBlock(block,i))}
+        </div>
+
+        {/* Footer */}
+        <div style={{marginTop:64,paddingTop:32,borderTop:"1px solid rgba(255,255,255,.05)",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
+          <button onClick={onClose} className="btn-secondary" style={{padding:"12px 24px",fontSize:".85rem"}}>← Back to Blog</button>
+          <a href="#contact" onClick={onClose} className="btn-primary" style={{padding:"12px 24px",fontSize:".85rem"}}>Work With Me →</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   BLOG SECTION
+══════════════════════════════════════════ */
+function Blog() {
+  const [expanded, setExpanded] = useState(false);
+  const [active, setActive]     = useState(null);
+  const visible = expanded ? BLOG_POSTS : BLOG_POSTS.slice(0,3);
+
+  return (
+    <>
+      {active && <ArticleReader post={active} onClose={()=>setActive(null)}/>}
+      <section id="blog" style={{padding:"100px 5%",background:"#080d1a"}}>
+        <SectionHeader tag="Articles" title="Dev" accent="Blog" desc="Practical guides, tutorials and insights from real-world full stack development experience."/>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:24,maxWidth:1100,margin:"0 auto"}}>
+          {visible.map((p,i)=>(
+            <div key={p.id} onClick={()=>setActive(p)} className={`blog-card reveal reveal-d${i%4+1}`} style={{cursor:"pointer"}}>
+              <div style={{padding:"18px 24px 14px",background:p.color,borderBottom:`1px solid ${p.border}`}}>
+                <span style={{fontFamily:"'DM Mono',monospace",fontSize:".66rem",color:"#00c8ff",letterSpacing:2,textTransform:"uppercase"}}>{p.tag}</span>
+              </div>
+              <div style={{padding:24,display:"flex",flexDirection:"column",gap:12,flex:1}}>
+                <h3 style={{fontFamily:"'Syne',sans-serif",fontSize:"1rem",fontWeight:700,lineHeight:1.4,color:"#e8eaf6"}}>{p.title}</h3>
+                <p style={{color:"#a0aec0",fontSize:".85rem",lineHeight:1.7,flex:1}}>{p.desc}</p>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",paddingTop:12,borderTop:"1px solid rgba(255,255,255,.05)"}}>
+                  <span style={{fontFamily:"'DM Mono',monospace",fontSize:".68rem",color:"#6b7a99"}}>{p.date}</span>
+                  <span style={{fontFamily:"'DM Mono',monospace",fontSize:".68rem",color:"#00c8ff",display:"flex",alignItems:"center",gap:6}}>
+                    {p.readTime}
+                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="reveal" style={{textAlign:"center",marginTop:40}}>
+          <button onClick={()=>setExpanded(!expanded)} className="btn-secondary">
+            {expanded?"Show Less ↑":"View All Articles →"}
+          </button>
+        </div>
+      </section>
+    </>
+  );
+}
+
+/* ══════════════════════════════════════════
+   PRICING SECTION
+══════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   PRICING SECTION
+══════════════════════════════════════════ */
+const PLANS = [
+  {
+    name:"Starter", price:"₦80,000", usd:"~$50", badge:null,
+    desc:"Perfect for small businesses needing a clean online presence.",
+    features:["Landing page (up to 5 sections)","Responsive mobile design","Contact form integration","Basic SEO setup","1 round of revisions","Delivery in 5–7 days"],
+    cta:"Get Started", ctaStyle:"btn-secondary",
+  },
+  {
+    name:"Professional", price:"₦200,000", usd:"~$130", badge:"Most Popular",
+    desc:"Full stack web application for serious businesses and startups.",
+    features:["Full stack web app (React + Node.js)","User authentication (JWT)","MongoDB database setup","REST API development","Admin dashboard","3 rounds of revisions","Deployment on Render/Netlify","Delivery in 2–3 weeks"],
+    cta:"Hire Me Now", ctaStyle:"btn-primary",
+  },
+  {
+    name:"Enterprise", price:"Custom", usd:"Let's talk", badge:null,
+    desc:"Complex systems, teams, and long-term partnerships.",
+    features:["Custom full stack architecture","File upload & storage systems","Third-party API integrations","Performance optimization","Ongoing maintenance","Priority support","NDA available","Timeline based on scope"],
+    cta:"Book a Call", ctaStyle:"btn-secondary",
+  },
+];
+
+function Pricing() {
+  return (
+    <section id="pricing" style={{padding:"100px 5%"}}>
+      <SectionHeader tag="Hire Me" title="Transparent" accent="Pricing" desc="No hidden fees. No surprises. Just clean code delivered on time."/>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:24,maxWidth:1100,margin:"0 auto",alignItems:"start"}}>
+        {PLANS.map((p,i)=>(
+          <div key={i} className={`glass-card pricing-card reveal reveal-d${i+1}${p.badge?" featured":""}`}>
+            {p.badge && (
+              <div style={{position:"absolute",top:20,right:20,...S.mono,fontSize:".62rem",padding:"4px 12px",borderRadius:100,background:"linear-gradient(135deg,#00c8ff,#7b2fff)",color:"#fff",letterSpacing:1}}>{p.badge}</div>
+            )}
+            <div>
+              <div style={{...S.mono,fontSize:".72rem",...S.dim,letterSpacing:2,textTransform:"uppercase",marginBottom:8}}>{p.name}</div>
+              <div style={{...S.display,fontSize:"2rem",fontWeight:800,...S.gradText,lineHeight:1}}>{p.price}</div>
+              <div style={{...S.mono,fontSize:".72rem",...S.dim,marginTop:4}}>{p.usd}</div>
+            </div>
+            <p style={{...S.mid,fontSize:".87rem",lineHeight:1.7,paddingBottom:20,borderBottom:"1px solid rgba(255,255,255,.05)"}}>{p.desc}</p>
+            <div style={{display:"flex",flexDirection:"column",gap:12,flex:1}}>
+              {p.features.map((f,j)=><div key={j} className="pricing-feat">{f}</div>)}
+            </div>
+            <a href="#contact" className={p.ctaStyle} style={{textAlign:"center",justifyContent:"center",marginTop:8}}>{p.cta} →</a>
+          </div>
+        ))}
+      </div>
+      <div className="reveal" style={{textAlign:"center",marginTop:48,padding:"24px 32px",background:"rgba(0,200,255,.04)",border:"1px solid rgba(0,200,255,.1)",borderRadius:16,maxWidth:600,margin:"48px auto 0"}}>
+        <p style={{...S.mid,fontSize:".92rem",lineHeight:1.8}}>
+          🇳🇬 <strong style={{color:"#e8eaf6"}}>Based in Nigeria, working globally.</strong><br/>
+          All prices negotiable for long-term contracts. International payments accepted via <strong style={{color:"#e8eaf6"}}>Payoneer, Wise & Crypto</strong>.
+        </p>
       </div>
     </section>
   );
@@ -704,11 +1336,14 @@ function Contact() {
             <p style={{...S.mid,fontSize:".9rem",lineHeight:1.8,marginBottom:32}}>Whether you need a full stack application, a secure API, or a skilled developer to join your team — I'm available and ready to deliver excellence.</p>
             <div style={{display:"flex",flexDirection:"column",gap:16,marginBottom:32}}>
               {[
-{icon:"📧",label:"Email",   value:"onyuchennachidera@gmail.com",     href:"mailto:onyuchennachidera@gmail.com"},            {icon:"📱",label:"WhatsApp",value:"+234 8113882005",href:"tel:+2348113882005"},          {icon:"💼",label:"LinkedIn",value:"Uchenna Chidera Onyesom",        href:"https://www.linkedin.com/in/uchenna-chidera-onyesom-72b973345"},
-{icon:"🐙",label:"GitHub",  value:`github.com/${GITHUB_USERNAME}`, href:`https://github.com/${GITHUB_USERNAME}`},
-].map(c=>(<a key={c.label} href={c.href} className="contact-item" target={c.href.startsWith("http")?"_blank":undefined} rel="noreferrer">
+                {icon:"📧",label:"Email",   value:"onyuchennachidera@gmail.com",     href:"mailto:onyuchennachidera@gmail.com"},
+                {icon:"📱",label:"WhatsApp",value:"+234 811 388 2005",              href:"tel:+2348113882005"},
+                {icon:"💼",label:"LinkedIn",value:"Uchenna Chidera Onyesom",        href:"https://www.linkedin.com/in/uchenna-chidera-onyesom-72b973345"},
+                {icon:"🐙",label:"GitHub",  value:`github.com/${GITHUB_USERNAME}`, href:`https://github.com/${GITHUB_USERNAME}`},
+              ].map(c=>(
+                <a key={c.label} href={c.href} className="contact-item" target={c.href.startsWith("http")?"_blank":undefined} rel="noreferrer">
                   <div style={{width:40,height:40,borderRadius:10,background:"rgba(0,200,255,.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1rem",flexShrink:0}}>{c.icon}</div>
-  <div>
+                  <div>
                     <div style={{fontSize:".72rem",...S.dim,marginBottom:2}}>{c.label}</div>
                     <div style={{fontSize:".88rem",fontWeight:500}}>{c.value}</div>
                   </div>
@@ -768,13 +1403,16 @@ function Footer() {
    ROOT APP
 ══════════════════════════════════════════ */
 export default function Portfolio() {
-  const [scrolled,    setScrolled]    = useState(false);
-  const [mobileOpen,  setMobileOpen]  = useState(false);
+  const [scrolled,   setScrolled]  = useState(false);
+  const [mobileOpen, setMobileOpen]= useState(false);
+  const [loaded,     setLoaded]    = useState(false);
 
   useEffect(()=>{
     const fn = ()=>setScrolled(window.scrollY>50);
     window.addEventListener("scroll",fn);
-    return()=>window.removeEventListener("scroll",fn);
+    // Loader: hide after 1.8s
+    const t = setTimeout(()=>setLoaded(true), 1800);
+    return()=>{ window.removeEventListener("scroll",fn); clearTimeout(t); };
   },[]);
 
   useReveal();
@@ -782,6 +1420,8 @@ export default function Portfolio() {
   return (
     <>
       <GlobalStyles/>
+      <Loader done={loaded}/>
+      <CustomCursor/>
       <Navbar scrolled={scrolled} mobileOpen={mobileOpen} setMobileOpen={setMobileOpen}/>
       <Hero/>
       <Divider/>
@@ -792,6 +1432,10 @@ export default function Portfolio() {
       <Projects/>
       <Divider/>
       <Services/>
+      <Divider/>
+      <Pricing/>
+      <Divider/>
+      <Blog/>
       <Divider/>
       <GitHubSection/>
       <Divider/>
