@@ -32,6 +32,27 @@ const GLOBAL_CSS = `
   @keyframes shimmer    { 0%{background-position:200% center} 100%{background-position:-200% center} }
   @keyframes cursorBlink  { 0%,100%{opacity:.8} 50%{opacity:0} }
   @keyframes loaderSpin   { to{transform:rotate(360deg)} }
+  @keyframes countUp     { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes waPulse     { 0%,100%{box-shadow:0 0 0 0 rgba(37,211,102,.4)} 70%{box-shadow:0 0 0 12px rgba(37,211,102,0)} }
+  @keyframes waWiggle    { 0%,100%{transform:rotate(0deg)} 25%{transform:rotate(-8deg)} 75%{transform:rotate(8deg)} }
+
+  /* WhatsApp float */
+  .wa-float { position:fixed; bottom:28px; right:28px; z-index:9000; display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+  .wa-btn { width:58px; height:58px; border-radius:50%; background:linear-gradient(135deg,#25d366,#128c7e); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(37,211,102,.4); animation:waPulse 2.5s ease-in-out infinite; transition:transform .2s; }
+  .wa-btn:hover { transform:scale(1.1); }
+  .wa-btn:hover svg { animation:waWiggle .4s ease; }
+  .wa-tooltip { background:rgba(8,13,26,.95); border:1px solid rgba(37,211,102,.25); border-radius:10px; padding:8px 14px; font-family:'DM Mono',monospace; font-size:.7rem; color:#25d366; letter-spacing:.5px; white-space:nowrap; backdrop-filter:blur(12px); opacity:0; transform:translateX(8px); transition:all .25s; pointer-events:none; }
+  .wa-float:hover .wa-tooltip { opacity:1; transform:translateX(0); }
+
+  /* Hero counters */
+  .hero-counters { display:flex; gap:32px; flex-wrap:wrap; padding:24px 0 0; border-top:1px solid rgba(255,255,255,.06); margin-top:8px; }
+  .hero-counter-item { display:flex; flex-direction:column; gap:3px; }
+  .hero-counter-num { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; background:linear-gradient(135deg,#00c8ff,#7b2fff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; }
+  .hero-counter-label { font-family:'DM Mono',monospace; font-size:.65rem; color:#3a4a6a; letter-spacing:1.5px; text-transform:uppercase; }
+
+  /* CV download btn */
+  .btn-cv { display:inline-flex; align-items:center; gap:8px; padding:12px 24px; background:rgba(0,200,255,.06); border:1px solid rgba(0,200,255,.2); border-radius:8px; color:#00c8ff; font-family:'DM Mono',monospace; font-size:.78rem; letter-spacing:1px; cursor:pointer; transition:all .25s; text-decoration:none; }
+  .btn-cv:hover { background:rgba(0,200,255,.14); transform:translateY(-2px); box-shadow:0 6px 24px rgba(0,200,255,.2); }
   @keyframes loaderFadeOut{ 0%{opacity:1} 100%{opacity:0} }
   @keyframes loaderIn     { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
@@ -162,12 +183,40 @@ const GLOBAL_CSS = `
 ══════════════════════════════════════════ */
 function GlobalStyles() {
   useEffect(() => {
+    // Inject CSS
     const id = "pf-global";
     if (!document.getElementById(id)) {
       const s = document.createElement("style");
       s.id = id; s.textContent = GLOBAL_CSS;
       document.head.appendChild(s);
     }
+    // SEO Meta tags
+    const metas = [
+      { name:"description",       content:"Uchenna Chidera Onyesom — Full Stack Developer from Abuja, Nigeria. Building scalable web apps with React, Node.js & MongoDB. Open for freelance & full-time roles." },
+      { name:"keywords",          content:"Full Stack Developer Nigeria, React Developer Abuja, Node.js Developer, MongoDB, Web Developer Nigeria, API Development, Donspark" },
+      { name:"author",            content:"Uchenna Chidera Onyesom" },
+      { property:"og:title",      content:"Uchenna Chidera Onyesom — Full Stack Developer" },
+      { property:"og:description",content:"Building scalable, secure & modern web applications. React · Node.js · MongoDB · REST APIs. Based in Abuja, Nigeria." },
+      { property:"og:url",        content:"https://donsparkdev.netlify.app" },
+      { property:"og:type",       content:"website" },
+      { property:"og:image",      content:`https://avatars.githubusercontent.com/${GITHUB_USERNAME}` },
+      { name:"twitter:card",      content:"summary_large_image" },
+      { name:"twitter:title",     content:"Uchenna Chidera Onyesom — Full Stack Developer" },
+      { name:"twitter:description",content:"Building scalable web apps with React, Node.js & MongoDB. Based in Abuja, Nigeria." },
+      { name:"twitter:image",     content:`https://avatars.githubusercontent.com/${GITHUB_USERNAME}` },
+    ];
+    metas.forEach(m => {
+      const key = m.property ? "property" : "name";
+      const val = m.property || m.name;
+      if (!document.querySelector(`meta[${key}="${val}"]`)) {
+        const el = document.createElement("meta");
+        el.setAttribute(key, val);
+        el.content = m.content;
+        document.head.appendChild(el);
+      }
+    });
+    // Page title
+    document.title = "Uchenna Chidera Onyesom — Full Stack Developer | Abuja, Nigeria";
   }, []);
   return null;
 }
@@ -257,6 +306,26 @@ function CustomCursor() {
   return (<><div ref={dot} className="cursor-dot"/><div ref={ring} className="cursor-ring"/></>);
 }
 
+
+/* ══════════════════════════════════════════
+   WHATSAPP FLOAT BUTTON
+══════════════════════════════════════════ */
+function WhatsAppFloat() {
+  const phone = "2348113882005"; // replace with your real number
+  const msg   = encodeURIComponent("Hi Uchenna! I saw your portfolio and I'd like to discuss a project with you.");
+  const url   = `https://wa.me/${phone}?text=${msg}`;
+  return (
+    <div className="wa-float">
+      <span className="wa-tooltip">Chat on WhatsApp</span>
+      <a href={url} target="_blank" rel="noreferrer" className="wa-btn" aria-label="Chat on WhatsApp">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </a>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════
    CUSTOM CODE-THEMED LOGO
 ══════════════════════════════════════════ */
@@ -291,6 +360,35 @@ function Logo({ size = 36 }) {
       <rect x="19" y="29" width="46" height="1.5" rx="1" fill="url(#underlineGrad)"/>
     </svg>
   );
+}
+
+
+/* ══════════════════════════════════════════
+   ANIMATED COUNTER
+══════════════════════════════════════════ */
+function AnimatedCounter({ target, suffix="" }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const started = useRef(false);
+  useEffect(()=>{
+    const obs = new IntersectionObserver(([e])=>{
+      if(e.isIntersecting && !started.current){
+        started.current = true;
+        const duration = 1800;
+        const steps    = 60;
+        const inc      = target / steps;
+        let current    = 0;
+        const timer = setInterval(()=>{
+          current = Math.min(current + inc, target);
+          setCount(Math.floor(current));
+          if(current >= target) clearInterval(timer);
+        }, duration / steps);
+      }
+    },{ threshold:.5 });
+    if(ref.current) obs.observe(ref.current);
+    return()=>obs.disconnect();
+  },[target]);
+  return <span ref={ref}>{count}{suffix}</span>;
 }
 
 /* ══════════════════════════════════════════
@@ -446,6 +544,18 @@ function Hero() {
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><polyline points="16,3 12,7 8,3"/></svg>
             Hire Me
           </a>
+          <a href="https://drive.google.com/uc?export=download&id=16dgO03jC0fxfFEkIGS1xx-b-uAOzVLPL" target="_blank" rel="noreferrer" className="btn-cv">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download CV
+          </a>
+        </div>
+        <div className="hero-counters">
+          {[{target:20,suffix:"+",label:"Projects Built"},{target:2,suffix:"+",label:"Years Coding"},{target:100,suffix:"%",label:"Client Satisfaction"},{target:15,suffix:"+",label:"Happy Clients"}].map((c,i)=>(
+            <div key={i} className="hero-counter-item">
+              <span className="hero-counter-num"><AnimatedCounter target={c.target} suffix={c.suffix}/></span>
+              <span className="hero-counter-label">{c.label}</span>
+            </div>
+          ))}
         </div>
       </div>
       <div className="scroll-anim" style={{position:"absolute",bottom:40,left:"50%",transform:"translateX(-50%)",display:"flex",flexDirection:"column",alignItems:"center",gap:8,...S.dim,fontSize:".72rem",letterSpacing:2,textTransform:"uppercase",...S.mono,zIndex:2}}>
@@ -493,7 +603,13 @@ function About() {
               </div>
             ))}
           </div>
-          <a href="#contact" className="btn-primary" style={{width:"fit-content"}}>Let's Build Something →</a>
+          <div style={{display:"flex",gap:12,flexWrap:"wrap",alignItems:"center"}}>
+            <a href="#contact" className="btn-primary" style={{width:"fit-content"}}>Let's Build Something →</a>
+            <a href="https://drive.google.com/uc?export=download&id=16dgO03jC0fxfFEkIGS1xx-b-uAOzVLPL" target="_blank" rel="noreferrer" className="btn-cv">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download CV
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -856,9 +972,6 @@ function Blog() {
 /* ══════════════════════════════════════════
    PRICING SECTION
 ══════════════════════════════════════════ */
-/* ══════════════════════════════════════════
-   PRICING SECTION
-══════════════════════════════════════════ */
 const PLANS = [
   {
     name:"Starter", price:"₦80,000", usd:"~$50", badge:null,
@@ -1197,6 +1310,7 @@ export default function Portfolio() {
       <GlobalStyles/>
       <Loader done={loaded}/>
       <CustomCursor/>
+      <WhatsAppFloat/>
       <Navbar scrolled={scrolled} mobileOpen={mobileOpen} setMobileOpen={setMobileOpen}/>
       <Hero/>
       <Divider/>
