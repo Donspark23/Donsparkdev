@@ -20,7 +20,7 @@ function About() {
   return (
     <section id="about" style={{padding:"100px 5%",background:"#080d1a"}}>
       <div className="about-grid" style={{display:"grid",gridTemplateColumns:"1fr 1.4fr",gap:60,alignItems:"center",maxWidth:1100,margin:"0 auto"}}>
-        <div className="about-visual reveal" style={{display:"flex",justifyContent:"center"}}>
+        <div className="about-visual" style={{display:"flex",justifyContent:"center"}}>
           <div style={{position:"relative",width:280,height:280}}>
             <div style={{width:"100%",height:"100%",borderRadius:24,border:"2px solid rgba(0,200,255,.2)",overflow:"hidden",position:"relative"}}>
               <img src={`https://avatars.githubusercontent.com/${GITHUB_USERNAME}`} alt="Uchenna Chidera Onyesom" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} onError={e=>{e.target.style.display="none";}}/>
@@ -36,7 +36,7 @@ function About() {
             </div>
           </div>
         </div>
-        <div className="reveal reveal-d1">
+        <div className="">
           <div style={{display:"inline-block",...S.mono,fontSize:".72rem",...S.neon,letterSpacing:3,textTransform:"uppercase",marginBottom:12,padding:"5px 14px",border:"1px solid rgba(0,200,255,.2)",borderRadius:100}}>About Me</div>
           <h2 style={{...S.display,fontSize:"2rem",fontWeight:800,letterSpacing:"-.5px",marginBottom:4}}>Uchenna Chidera<br/>Onyesom</h2>
           <p style={{...S.neon,...S.mono,fontSize:".85rem",marginBottom:20,letterSpacing:1}}>$ full-stack-developer --location="Abuja, Nigeria"</p>
@@ -80,7 +80,7 @@ function Skills() {
       <SectionHeader tag="Expertise" title="My" accent="Tech Stack" desc="A curated arsenal of tools and technologies I wield to build complete, high-performance systems."/>
       <div className="skills-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:24,maxWidth:1100,margin:"0 auto"}}>
         {SKILLS.map((s,i)=>(
-          <div key={i} className={`glass-card reveal reveal-d${i%4+1}`} style={{padding:30}}>
+          <div key={i} className="glass-card" style={{padding:30}}>
             <div style={{width:50,height:50,borderRadius:12,background:s.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.5rem",marginBottom:20}}>{s.icon}</div>
             <div style={{...S.display,fontSize:"1rem",fontWeight:700,marginBottom:16}}>{s.title}</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
@@ -91,7 +91,7 @@ function Skills() {
       </div>
       <div style={{maxWidth:1100,margin:"48px auto 0"}}>
         {SKILL_BARS.map((b,i)=>(
-          <div key={b.name} className={`reveal reveal-d${i%4+1}`} style={{display:"flex",alignItems:"center",gap:16,marginBottom:18}}>
+          <div key={b.name} className="" style={{display:"flex",alignItems:"center",gap:16,marginBottom:18}}>
             <span style={{...S.mono,fontSize:".78rem",...S.mid,width:120,flexShrink:0}}>{b.name}</span>
             <div style={{flex:1,height:4,background:"rgba(255,255,255,.05)",borderRadius:2,overflow:"hidden"}}>
               <div ref={el=>barsRef.current[i]=el} className="skill-bar-fill" style={{height:"100%",borderRadius:2,background:"linear-gradient(90deg,#00c8ff,#7b2fff)",width:`${b.pct}%`}}/>
